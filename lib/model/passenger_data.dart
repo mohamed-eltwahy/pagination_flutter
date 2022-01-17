@@ -1,150 +1,112 @@
-// To parse this JSON data, do
-//
-//     final welcome = welcomeFromJson(jsonString);
+class Passengers {
+  late dynamic totalPassengers;
+  late dynamic totalPages;
+  late List<Data> data;
 
-import 'dart:convert';
+  Passengers(
+      {required this.totalPassengers,
+      required this.totalPages,
+      required this.data});
 
-Welcome welcomeFromJson(String str) => Welcome.fromJson(json.decode(str));
+  Passengers.fromJson(Map<String, dynamic> json) {
+    totalPassengers = json['totalPassengers'];
+    totalPages = json['totalPages'];
+    if (json['data'] != null) {
+      data = <Data>[];
+      json['data'].forEach((v) {
+        data.add(new Data.fromJson(v));
+      });
+    }
+  }
 
-String welcomeToJson(Welcome data) => json.encode(data.toJson());
-
-class Welcome {
-    Welcome({
-        required this.totalPassengers,
-        required this.totalPages,
-        required this.data,
-    });
-
-    int totalPassengers;
-    int totalPages;
-    List<Datum> data;
-
-    factory Welcome.fromJson(Map<String, dynamic> json) => Welcome(
-        totalPassengers: json["totalPassengers"],
-        totalPages: json["totalPages"],
-        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "totalPassengers": totalPassengers,
-        "totalPages": totalPages,
-        "data": List<dynamic>.from(data.map((x) => x.toJson())),
-    };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['totalPassengers'] = this.totalPassengers;
+    data['totalPages'] = this.totalPages;
+    data['data'] = this.data.map((v) => v.toJson()).toList();
+    return data;
+  }
 }
 
-class Datum {
-    Datum({
-        required this.id,
-        required this.trips,
-        required this.v,
-    });
+class Data {
+  late dynamic sId;
+  late dynamic name;
+  late dynamic trips;
+  late List<Airline> airline;
+  late dynamic iV;
 
-    dynamic id;
-    dynamic trips;
-    dynamic v;
+  Data(
+      {required this.sId,
+      required this.name,
+      required this.trips,
+      required this.airline,
+      required this.iV});
 
-    factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-        id: json["_id"],
-        trips: json["trips"],
-        v: json["__v"],
-    );
+  Data.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    name = json['name'];
+    trips = json['trips'];
+    if (json['airline'] != null) {
+      airline = <Airline>[];
+      json['airline'].forEach((v) {
+        airline.add(new Airline.fromJson(v));
+      });
+    }
+    iV = json['__v'];
+  }
 
-    Map<String, dynamic> toJson() => {
-        "_id": id,
-        "trips": trips,
-        "__v": v,
-    };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['name'] = this.name;
+    data['trips'] = this.trips;
+    data['airline'] = this.airline.map((v) => v.toJson()).toList();
+    data['__v'] = this.iV;
+    return data;
+  }
 }
 
 class Airline {
-    Airline({
-        required this.id,
-        required this.name,
-        required this.country,
-        required this.logo,
-        required this.slogan,
-        required this.headQuaters,
-        required this.website,
-        required this.established,
-    });
+  late dynamic id;
+  late dynamic name;
+  late dynamic country;
+  late dynamic logo;
+  late dynamic slogan;
+  late dynamic headQuaters;
+  late dynamic website;
+  late dynamic established;
 
-    int id;
-    Name name;
-    Country country;
-    String logo;
-    Slogan slogan;
-    HeadQuaters headQuaters;
-    Website website;
-    String established;
+  Airline(
+      {required this.id,
+      required this.name,
+      required this.country,
+      required this.logo,
+      required this.slogan,
+      required this.headQuaters,
+      required this.website,
+      required this.established});
 
-    // factory Airline.fromJson(Map<String, dynamic> json) => Airline(
-    // id: json["id"],
-    // name: json["name"],
-    // country: json["country"],
-    // logo: json["logo"],
-    // slogan: json["slogan"],
-    // headQuaters: json["head_quaters"],
-    // website: json["website"],
-    // established: json["established"],
-    // );
+  Airline.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    country = json['country'];
+    logo = json['logo'];
+    slogan = json['slogan'];
+    headQuaters = json['head_quaters'];
+    website = json['website'];
+    established = json['established'];
+  }
 
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": nameValues.reverse[name],
-        "country": countryValues.reverse[country],
-        "logo": logo,
-        "slogan": sloganValues.reverse[slogan],
-        "head_quaters": headQuatersValues.reverse[headQuaters],
-        "website": websiteValues.reverse[website],
-        "established": established,
-    };
-}
-
-enum Country { TAIWAN, SINGAPORE }
-
-final countryValues = EnumValues({
-    "Singapore": Country.SINGAPORE,
-    "Taiwan": Country.TAIWAN
-});
-
-enum HeadQuaters { THE_376_HSIN_NAN_RD_SEC_1_LUZHU_TAOYUAN_CITY_TAIWAN, AIRLINE_HOUSE_25_AIRLINE_ROAD_SINGAPORE_819829 }
-
-final headQuatersValues = EnumValues({
-    "Airline House, 25 Airline Road, Singapore 819829": HeadQuaters.AIRLINE_HOUSE_25_AIRLINE_ROAD_SINGAPORE_819829,
-    "376, Hsin-Nan Rd., Sec. 1, Luzhu, Taoyuan City, Taiwan": HeadQuaters.THE_376_HSIN_NAN_RD_SEC_1_LUZHU_TAOYUAN_CITY_TAIWAN
-});
-
-enum Name { EVA_AIR, SINGAPORE_AIRLINES }
-
-final nameValues = EnumValues({
-    "Eva Air": Name.EVA_AIR,
-    "Singapore Airlines": Name.SINGAPORE_AIRLINES
-});
-
-enum Slogan { SHARING_THE_WORLD_FLYING_TOGETHER, A_GREAT_WAY_TO_FLY }
-
-final sloganValues = EnumValues({
-    "A Great Way to Fly": Slogan.A_GREAT_WAY_TO_FLY,
-    "Sharing the World, Flying Together": Slogan.SHARING_THE_WORLD_FLYING_TOGETHER
-});
-
-enum Website { WWW_EVAAIR_COM, WWW_SINGAPOREAIR_COM }
-
-final websiteValues = EnumValues({
-    "www.evaair.com": Website.WWW_EVAAIR_COM,
-    "www.singaporeair.com": Website.WWW_SINGAPOREAIR_COM
-});
-
-class EnumValues<T> {
-    Map<String, T> map;
-  late  Map<T, String> reverseMap;
-
-    EnumValues(this.map);
-
-    Map<T, String> get reverse {
-        if (reverseMap == null) {
-            reverseMap = map.map((k, v) => new MapEntry(v, k));
-        }
-        return reverseMap;
-    }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['country'] = this.country;
+    data['logo'] = this.logo;
+    data['slogan'] = this.slogan;
+    data['head_quaters'] = this.headQuaters;
+    data['website'] = this.website;
+    data['established'] = this.established;
+    return data;
+  }
 }
