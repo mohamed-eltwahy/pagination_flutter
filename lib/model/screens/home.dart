@@ -1,10 +1,39 @@
-import 'package:dio/dio.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:infinite_list_pagination/provider/homeprovider.dart';
-import 'package:provider/provider.dart';
-import '../passenger_data.dart';
+import 'package:infinite_list_pagination/model/passenger_data.dart';
+import 'package:infinite_list_pagination/model/screens/model.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+void main() {
+  HttpOverrides.global = new MyHttpOverrides();
+
+  runApp(MyApp());
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        debugShowCheckedModeBanner: false,
+        home: HomePage());
+  }
+}
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,13 +41,49 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
+  int currentPage = 1;
 
-   Provider.of<HomeProvider>(context, listen: false).getalldata();
+  late int totalPages;
 
-    // print('ddddddddddddddddddd' + Provider.of<HomeProvider>(context, listen: false).getalldata().toString());
+  List<Datum> passengers = [];
+
+  final RefreshController refreshController =
+      RefreshController(initialRefresh: true);
+
+  Future<bool> getPassengerData({bool isRefresh = false}) async {
+    if (isRefresh) {
+      currentPage = 1;
+    } else {
+      if (currentPage >= totalPages) {
+        refreshController.loadNoData();
+        return false;
+      }
+    }
+
+    final Uri uri = Uri.parse(
+        "https://api.instantwebtools.net/v1/passenger?page=$currentPage&size=10");
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final result = welcomeFromJson(response.body);
+
+      if (isRefresh) {
+        passengers = result.data;
+      }else{
+        passengers.addAll(result.data);
+      }
+
+      currentPage++;
+
+      totalPages = result.totalPages;
+
+      print(response.body);
+      setState(() {});
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -27,12 +92,38 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Infinite List Pagination"),
       ),
-      body: ListView.separated(
-        itemBuilder: (context, index) {
-          return Container();
+      body: SmartRefresher(
+        controller: refreshController,
+        enablePullUp: true,
+        onRefresh: () async {
+          final result = await getPassengerData(isRefresh: true);
+          if (result) {
+            refreshController.refreshCompleted();
+          } else {
+            refreshController.refreshFailed();
+          }
         },
-        separatorBuilder: (context, index) => Divider(),
-        itemCount: 12,
+        onLoading: () async {
+          final result = await getPassengerData();
+          if (result) {
+            refreshController.loadComplete();
+          } else {
+            refreshController.loadFailed();
+          }
+        },
+        child: ListView.separated(
+          itemBuilder: (context, index) {
+            final passenger = passengers[index];
+
+            return ListTile(
+              title: Text(passenger.id.toString()),
+              // subtitle: Text(passenger.name),
+              trailing: Text(passenger.trips.toString(),  style: TextStyle(color: Colors.green),),
+            );
+          },
+          separatorBuilder: (context, index) => Divider(),
+          itemCount: passengers.length,
+        ),
       ),
     );
   }

@@ -12,7 +12,7 @@ class HomeProvider extends ChangeNotifier {
   List<dynamic> get passengers => [..._passengers];
 
   int currentPage = 1;
-  late int totalPages;
+   int totalPages=0;
 
   Future<dynamic> getalldata({bool isRefresh = false}) async {
     // _isloading = true;

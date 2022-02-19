@@ -10,8 +10,8 @@ late DataModel _dataFetcher;
   int totalPages = 0;
   int pageSize = 25;
 
-  List<Radio>? get allUsers => _dataFetcher.data;
-  double get totalRecords => _dataFetcher.totalRecords!.toDouble();
+  List<Data>? get allUsers => _dataFetcher.data;
+  double get totalRecords => _dataFetcher.totalPages!.toDouble();
 
   LoadMoreStatus _loadMoreStatus = LoadMoreStatus.STABLE;
   getLoadMoreStatus() => _loadMoreStatus;
@@ -34,7 +34,7 @@ late DataModel _dataFetcher;
       DataModel itemModel =
           await _apiService.getData(pageNumber);
       if (_dataFetcher.data == null) {
-        totalPages =  ((itemModel.totalRecords! - 1) / pageSize).ceil();        
+        totalPages =  ((itemModel.totalPages! - 1) / pageSize).ceil();        
         _dataFetcher = itemModel;
       } else {        
         _dataFetcher.data!.addAll(itemModel.data!);

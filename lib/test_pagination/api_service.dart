@@ -7,8 +7,9 @@ import 'models/data_model.dart';
 
 class APIService {
   Future<DataModel> getData(pageNumber) async {
-    String url =
-        "/GetRadios?pageSize=15&pageNumber=$pageNumber";
+      String url = 'https://api.instantwebtools.net/v1/passenger?page=$pageNumber"&size=10';
+    // String url =
+    //     "/GetRadios?pageSize=15&pageNumber=$pageNumber";
 
     print("URL : $url");
     final response = await http.get(Config.apiURL+ url as Uri);

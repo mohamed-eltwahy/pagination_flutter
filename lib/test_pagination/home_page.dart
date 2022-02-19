@@ -51,28 +51,31 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _listView(DataProvider dataProvider) {
-    return 
-        ListView.separated(
-          itemCount: dataProvider.allUsers!.length,
-          controller: _scrollController,
-          shrinkWrap: true,
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            if ((index == dataProvider.allUsers!.length - 1) &&
-                dataProvider.allUsers!.length < dataProvider.totalRecords) {
-              return Center(child: CircularProgressIndicator());
-            }
+    return ListView.separated(
+      itemCount: dataProvider.allUsers!.length,
+      controller: _scrollController,
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        if ((index == dataProvider.allUsers!.length - 1) &&
+            dataProvider.allUsers!.length < dataProvider.totalRecords) {
+          return Center(child: CircularProgressIndicator());
+        }
 
-            return _buildRow(dataProvider.allUsers![index]);
-          },
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-        );
+        return _buildRow(dataProvider.allUsers![index]);
+      },
+      separatorBuilder: (context, index) {
+        return Divider();
+      },
+    );
   }
 
-  Widget _buildRow(RadioModel.Radio radioModel) {
-    return ListTile(title: new Text(radioModel.radioName!));
+  Widget _buildRow(RadioModel.Data radioModel) {
+    return ListTile(
+        title: new Text(
+      radioModel.name!,
+      style: TextStyle(fontSize: 20),
+    ));
   }
 
   @override
